@@ -11,7 +11,6 @@ config/
 plex/
 jellyfin/
 qbittorrent/
-netdata/
 
 # Media, downloads and backups
 media/
@@ -19,6 +18,13 @@ downloads/
 backups/
 *.torrent
 *.fastresume
+*.log
+*.bak
+*.backup
+*.sql
+*.dump
+*.tar
+*.tgz
 
 # Keys, certificates and generic secret material
 *.key

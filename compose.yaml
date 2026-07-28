@@ -32,7 +32,7 @@ services:
       - "${CONFIG_ROOT:-/opt/media-stack}/jellyfin/cache:/cache"
       - "${MEDIA_ROOT:-/data/media}:/media"
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${JELLYFIN_PORT:-8096}:8096"
+      - "${BIND_ADDRESS:-127.0.0.1}:${JELLYFIN_PORT:-8096}:8096"
     devices:
       - /dev/dri:/dev/dri
     restart: unless-stopped
@@ -55,7 +55,7 @@ services:
       - "${MEDIA_ROOT:-/data/media}/animes:/media/animes"
       - "${MEDIA_ROOT:-/data/media}/films_anim:/media/films_anim"
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
+      - "${BIND_ADDRESS:-127.0.0.1}:${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
       - "${QBITTORRENT_PEER_PORT:-6881}:${QBITTORRENT_PEER_PORT:-6881}"
       - "${QBITTORRENT_PEER_PORT:-6881}:${QBITTORRENT_PEER_PORT:-6881}/udp"
     restart: unless-stopped
@@ -71,5 +71,5 @@ services:
     volumes:
       - "${HOST_STORAGE_ROOT:-/data}:/mnt/host:ro"
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${DASHDOT_PORT:-61208}:3001"
+      - "${BIND_ADDRESS:-127.0.0.1}:${DASHDOT_PORT:-61208}:3001"
     restart: unless-stopped

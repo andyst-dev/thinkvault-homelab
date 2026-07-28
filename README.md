@@ -36,11 +36,13 @@ flowchart LR
 | --- | --- | --- |
 | Plex | Media streaming with Intel acceleration | Host network; port `32400` |
 | Jellyfin | Open-source media streaming | `127.0.0.1:8096` |
-| qBittorrent | Downloads + VueTorrent | Web `127.0.0.1:8080`; peer `6881` |
+| qBittorrent | Downloads + VueTorrent | Web `127.0.0.1:8080`; peer `*:6881` |
 | Dashdot | Lightweight host/storage dashboard | `127.0.0.1:61208` |
 
-Web interfaces bind to loopback by default. Set `BIND_ADDRESS=0.0.0.0` only
-when the host firewall limits access to a trusted LAN.
+`BIND_ADDRESS` controls Jellyfin, the qBittorrent Web UI and Dashdot; those
+interfaces bind to loopback by default. Plex uses host networking instead, and
+the qBittorrent peer port `6881/TCP+UDP` listens on all host interfaces. Review
+the firewall rules before exposing either service beyond a trusted LAN.
 
 ## Requirements
 
@@ -77,7 +79,11 @@ when the host firewall limits access to a trusted LAN.
    . ./.env
    set +a
 
-   install -d \
+   sudo install -d -o "${PUID}" -g "${PGID}" \
+     "${CONFIG_ROOT}" \
+     "${HOST_STORAGE_ROOT}" \
+     "${MEDIA_ROOT}" \
+     "${DOWNLOADS_ROOT}" \
      "${CONFIG_ROOT}/plex/config" \
      "${CONFIG_ROOT}/jellyfin/config" \
      "${CONFIG_ROOT}/jellyfin/cache" \
@@ -85,9 +91,13 @@ when the host firewall limits access to a trusted LAN.
      "${MEDIA_ROOT}/films" \
      "${MEDIA_ROOT}/series" \
      "${MEDIA_ROOT}/animes" \
-     "${MEDIA_ROOT}/films_anim" \
-     "${DOWNLOADS_ROOT}"
+     "${MEDIA_ROOT}/films_anim"
    ```
+
+   The privileged `install` command is required for the default `/opt` and
+   `/data` paths. It assigns every directory to the UID and GID used by the
+   LinuxServer containers. Paths below your home directory can be created
+   without `sudo`.
 
 4. Validate and start the stack:
 

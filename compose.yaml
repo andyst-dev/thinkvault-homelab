@@ -1,0 +1,75 @@
+name: media-stack
+
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Etc/UTC}"
+      VERSION: docker
+    volumes:
+      - "${CONFIG_ROOT:-/opt/media-stack}/plex/config:/config"
+      - "${MEDIA_ROOT:-/data/media}/films:/films"
+      - "${MEDIA_ROOT:-/data/media}/series:/series"
+      - "${MEDIA_ROOT:-/data/media}/animes:/animes"
+      - "${MEDIA_ROOT:-/data/media}/films_anim:/films_anim"
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Etc/UTC}"
+    volumes:
+      - "${CONFIG_ROOT:-/opt/media-stack}/jellyfin/config:/config"
+      - "${CONFIG_ROOT:-/opt/media-stack}/jellyfin/cache:/cache"
+      - "${MEDIA_ROOT:-/data/media}:/media"
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${JELLYFIN_PORT:-8096}:8096"
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Etc/UTC}"
+      WEBUI_PORT: "${QBITTORRENT_WEBUI_PORT:-8080}"
+      TORRENTING_PORT: "${QBITTORRENT_PEER_PORT:-6881}"
+      DOCKER_MODS: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
+    volumes:
+      - "${CONFIG_ROOT:-/opt/media-stack}/qbittorrent/config:/config"
+      - "${DOWNLOADS_ROOT:-/data/downloads}:/downloads"
+      - "${MEDIA_ROOT:-/data/media}/films:/media/films"
+      - "${MEDIA_ROOT:-/data/media}/series:/media/series"
+      - "${MEDIA_ROOT:-/data/media}/animes:/media/animes"
+      - "${MEDIA_ROOT:-/data/media}/films_anim:/media/films_anim"
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
+      - "${QBITTORRENT_PEER_PORT:-6881}:${QBITTORRENT_PEER_PORT:-6881}"
+      - "${QBITTORRENT_PEER_PORT:-6881}:${QBITTORRENT_PEER_PORT:-6881}/udp"
+    restart: unless-stopped
+
+  dashdot:
+    image: mauricenino/dashdot:latest
+    container_name: dashdot
+    privileged: true
+    environment:
+      DASHDOT_ENABLE_CPU_TEMPS: "true"
+      DASHDOT_NETWORK_SPEED_AS_BYTES: "true"
+      DASHDOT_WIDGET_STORAGE_PATH: /mnt/host
+    volumes:
+      - "${HOST_STORAGE_ROOT:-/data}:/mnt/host:ro"
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${DASHDOT_PORT:-61208}:3001"
+    restart: unless-stopped

@@ -1,0 +1,40 @@
+# Local environment and overrides
+.env
+.env.*
+!.env.example
+compose.override.yaml
+docker-compose.override.yml
+
+# Runtime application state — contains databases, tokens, credentials,
+# cookies, certificates, watch history and torrent metadata.
+config/
+plex/
+jellyfin/
+qbittorrent/
+netdata/
+
+# Media, downloads and backups
+media/
+downloads/
+backups/
+*.torrent
+*.fastresume
+
+# Keys, certificates and generic secret material
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.keystore
+*.sqlite
+*.sqlite3
+*.db
+
+# Editor and OS noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
